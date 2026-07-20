@@ -1,6 +1,7 @@
 /* eslint-disable ember/no-classic-components, ember/require-tagless-components */
 import Component from "@ember/component";
 import { ajax } from "discourse/lib/ajax";
+import Category from "discourse/models/category";
 import { ALL_TAGS_ID } from "discourse/select-kit/components/tag-drop";
 import { i18n } from "discourse-i18n";
 import BoxTag from "./box-tag";
@@ -30,6 +31,21 @@ export default class TagGroupFilter extends Component {
     }
 
     let allowedTagGroups = this.category.allowed_tag_groups;
+
+    // `allowed_tag_groups` is only serialized on the full category record, not
+    // on the categories preloaded in the site payload. On a fresh page load it
+    // is therefore undefined, so fetch the full category before reading it
+    // (otherwise `.length` below throws and no filters render until a category
+    // edit hydrates the store record).
+    if (!allowedTagGroups) {
+      const full = await Category.reloadById(this.category.id);
+
+      if (this.isDestroying || this.isDestroyed) {
+        return;
+      }
+
+      allowedTagGroups = full?.category?.allowed_tag_groups || [];
+    }
 
     if (allowedTagGroups.length) {
       // get box style tag groups from setting
