@@ -38,7 +38,7 @@ export default class TagGroupFilter extends Component {
     // (otherwise `.length` below throws and no filters render until a category
     // edit hydrates the store record).
     if (!allowedTagGroups) {
-      const full = await Category.reloadById(this.category.id);
+      const result = await Category.reloadById(this.category.id);
 
       if (this.isDestroying || this.isDestroyed) {
         return;
