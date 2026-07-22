@@ -13,6 +13,11 @@ module PageObjects
         has_css?("#{CATEGORY_OUTLET} .custom-box-group h4", text: name)
       end
 
+      def has_no_filter_groups?
+        has_no_css?("#{CATEGORY_OUTLET} .custom-dropdown-group") &&
+          has_no_css?("#{CATEGORY_OUTLET} .custom-box-group")
+      end
+
       def has_active_box_tag?(name)
         has_css?("#{CATEGORY_OUTLET} .custom-box-group li.active a", text: name)
       end

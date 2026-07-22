@@ -30,21 +30,31 @@ export default class TagGroupFilter extends Component {
       return;
     }
 
+    const categoryId = this.category.id;
     let allowedTagGroups = this.category.allowed_tag_groups;
 
-    // `allowed_tag_groups` is only serialized on the full category record, not
-    // on the categories preloaded in the site payload. On a fresh page load it
-    // is therefore undefined, so fetch the full category before reading it
-    // (otherwise `.length` below throws and no filters render until a category
-    // edit hydrates the store record).
-    if (!allowedTagGroups) {
-      const result = await Category.reloadById(this.category.id);
-
-      if (this.isDestroying || this.isDestroyed) {
-        return;
+    // Hosted Discourse omits `allowed_tag_groups` from the lightweight
+    // site-payload category (SiteCategorySerializer), even though it is present
+    // on the full category record. Fetch the full category when the field is
+    // missing so the filters still render on a fresh page load (otherwise
+    // `.length` below throws and nothing renders until a category edit hydrates
+    // the store record).
+    if (!Array.isArray(allowedTagGroups)) {
+      try {
+        const result = await Category.reloadById(categoryId);
+        const reloaded = result?.category?.allowed_tag_groups;
+        allowedTagGroups = Array.isArray(reloaded) ? reloaded : [];
+      } catch {
+        allowedTagGroups = [];
       }
+    }
 
-      allowedTagGroups = result?.category?.allowed_tag_groups || [];
+    if (
+      this.isDestroying ||
+      this.isDestroyed ||
+      this.category?.id !== categoryId
+    ) {
+      return;
     }
 
     if (allowedTagGroups.length) {
@@ -57,6 +67,14 @@ export default class TagGroupFilter extends Component {
       const { results } = await ajax(`/tag_groups/filter/search`, {
         data: { names: allowedTagGroups },
       });
+
+      if (
+        this.isDestroying ||
+        this.isDestroyed ||
+        this.category?.id !== categoryId
+      ) {
+        return;
+      }
 
       results.forEach((tagGroup) => {
         // Backward compatibility for https://github.com/discourse/discourse/pull/36678

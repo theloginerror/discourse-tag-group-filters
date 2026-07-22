@@ -52,4 +52,13 @@ RSpec.describe "Tag group filters" do
     expect(page).to have_current_path("/c/#{category.slug}/#{category.id}")
     expect(tag_group_filter).to have_active_box_tag("All tags")
   end
+
+  it "renders no filters and does not error for a category without tag groups" do
+    category_without_tag_groups = Fabricate(:category)
+
+    visit("/c/#{category_without_tag_groups.slug}/#{category_without_tag_groups.id}")
+
+    expect(page).to have_css(".category-navigation")
+    expect(tag_group_filter).to have_no_filter_groups
+  end
 end
