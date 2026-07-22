@@ -44,7 +44,7 @@ export default class TagGroupFilter extends Component {
         return;
       }
 
-      allowedTagGroups = full?.category?.allowed_tag_groups || [];
+      allowedTagGroups = result?.category?.allowed_tag_groups || [];
     }
 
     if (allowedTagGroups.length) {
