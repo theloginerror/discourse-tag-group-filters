@@ -33,12 +33,6 @@ export default class TagGroupFilter extends Component {
     const categoryId = this.category.id;
     let allowedTagGroups = this.category.allowed_tag_groups;
 
-    // Hosted Discourse omits `allowed_tag_groups` from the lightweight
-    // site-payload category (SiteCategorySerializer), even though it is present
-    // on the full category record. Fetch the full category when the field is
-    // missing so the filters still render on a fresh page load (otherwise
-    // `.length` below throws and nothing renders until a category edit hydrates
-    // the store record).
     if (!Array.isArray(allowedTagGroups)) {
       try {
         const result = await Category.reloadById(categoryId);
