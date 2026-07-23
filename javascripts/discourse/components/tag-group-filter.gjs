@@ -1,5 +1,6 @@
 /* eslint-disable ember/no-classic-components, ember/require-tagless-components */
 import Component from "@ember/component";
+import { service } from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
 import Category from "discourse/models/category";
 import { ALL_TAGS_ID } from "discourse/select-kit/components/tag-drop";
@@ -12,6 +13,8 @@ function parseSetting(setting) {
 }
 
 export default class TagGroupFilter extends Component {
+  @service site;
+
   dropdownGroups = [];
   boxGroups = [];
 
