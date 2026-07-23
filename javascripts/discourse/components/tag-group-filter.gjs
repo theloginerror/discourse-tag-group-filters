@@ -36,7 +36,8 @@ export default class TagGroupFilter extends Component {
     if (!Array.isArray(allowedTagGroups)) {
       try {
         const result = await Category.reloadById(categoryId);
-        const reloaded = result?.category?.allowed_tag_groups;
+        const category = this.site.updateCategory(result.category);
+        const reloaded = category?.allowed_tag_groups;
         allowedTagGroups = Array.isArray(reloaded) ? reloaded : [];
       } catch {
         allowedTagGroups = [];
