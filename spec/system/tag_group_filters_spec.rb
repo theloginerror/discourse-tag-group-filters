@@ -56,7 +56,7 @@ RSpec.describe "Tag group filters" do
   it "renders no filters and does not error for a category without tag groups" do
     category_without_tag_groups = Fabricate(:category)
 
-    visit("/c/#{category_without_tag_groups.slug}/#{category_without_tag_groups.id}")
+    visit(category_without_tag_groups.url)
 
     expect(page).to have_css(".category-navigation")
     expect(tag_group_filter).to have_no_filter_groups
